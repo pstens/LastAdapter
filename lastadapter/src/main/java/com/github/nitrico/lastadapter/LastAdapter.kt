@@ -17,14 +17,13 @@
 package com.github.nitrico.lastadapter
 
 import android.databinding.DataBindingUtil
-import android.databinding.ObservableList
 import android.databinding.OnRebindCallback
 import android.databinding.ViewDataBinding
 import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.ViewGroup
 
-class LastAdapter(private val list: List<Any>,
+class LastAdapter(private var list: List<Any>,
                   private val variable: Int? = null,
                   stableIds: Boolean = false) : RecyclerView.Adapter<Holder<ViewDataBinding>>() {
 
@@ -85,7 +84,10 @@ class LastAdapter(private val list: List<Any>,
 
     fun into(recyclerView: RecyclerView) = apply { recyclerView.adapter = this }
 
-
+    fun updateItems(items: List<Any>) {
+        list = items
+        notifyDataSetChanged()
+    }
 
     override fun onCreateViewHolder(view: ViewGroup, viewType: Int): Holder<ViewDataBinding> {
         val binding = DataBindingUtil.inflate<ViewDataBinding>(inflater, viewType, view, false)
@@ -153,17 +155,11 @@ class LastAdapter(private val list: List<Any>,
     override fun getItemCount() = list.size
 
     override fun onAttachedToRecyclerView(rv: RecyclerView) {
-        if (recyclerView == null && list is ObservableList) {
-            list.addOnListChangedCallback(callback)
-        }
         recyclerView = rv
         inflater = LayoutInflater.from(rv.context)
     }
 
     override fun onDetachedFromRecyclerView(rv: RecyclerView) {
-        if (recyclerView != null && list is ObservableList) {
-            list.removeOnListChangedCallback(callback)
-        }
         recyclerView = null
     }
 
